@@ -25,23 +25,24 @@ def main():
     options = ["Data Exploration", "Data Pre-processing", "Data Visualization", "Clustering", "Evaluation"]
     choice = st.sidebar.radio("Go to", options)
     
-    data = load_data()
+    
     if data is not None:
         if choice == "Data Exploration":
+            data = load_data()
             data_description(data)
         elif choice == "Data Pre-processing":
             data = handle_missing_values(data)
             data = normalize_data(data)
         elif choice == "Data Visualization":
-            data, label_encoders = handle_missing_values(data)
+            data = handle_missing_values(data)
             data = normalize_data(data)
             visualize_data(data)
         elif choice == "Clustering":
-            data, label_encoders = handle_missing_values(data)
+            data = handle_missing_values(data)
             data = normalize_data(data)
             clusters = clustering(data)
         elif choice == "Evaluation":
-            data, label_encoders = handle_missing_values(data)
+            data = handle_missing_values(data)
             data = normalize_data(data)
             clusters = clustering(data)
             evaluate_clustering(data, clusters)
