@@ -6,6 +6,19 @@ from data_visualization import visualize_data
 from clustering_prediction import clustering
 from learning_evaluation import evaluate_clustering
 
+st.markdown(
+    """
+    <style>
+    .main .block-container {
+        max-width: 90%;
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 def main():
     st.title("Data Mining Project")
     st.sidebar.header("Navigation")
@@ -17,7 +30,7 @@ def main():
         if choice == "Data Exploration":
             data_description(data)
         elif choice == "Data Pre-processing":
-            data, label_encoders = handle_missing_values(data)
+            data = handle_missing_values(data)
             data = normalize_data(data)
         elif choice == "Data Visualization":
             data, label_encoders = handle_missing_values(data)

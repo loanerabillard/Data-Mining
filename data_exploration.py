@@ -1,55 +1,37 @@
 import streamlit as st
 import pandas as pd
-import io
+
 
 
 def load_data():
-    uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
-    if uploaded_file is not None:
-        sep = st.text_input("Enter the separator used in the file (e.g., ',' for comma, ';' for semicolon):", value=",")
-        header_row = st.number_input("Enter the header row number (0 if no header):", min_value=0, value=0)
+    file = st.file_uploader("Upload your CSV file", type=["csv"])
+    if file is not None:
+        Sep = st.text_input("Enter the separator used in the file (e.g., ',' for comma, ';' for semicolon):", value=",")
+        Header_RowNumber = st.number_input("Enter the header row number (0 if no header):", min_value=0, value=0)
         try:
-            data = pd.read_csv(uploaded_file, sep=sep, header=header_row)
+            data = pd.read_csv(file, sep=Sep, header=Header_RowNumber)
             return data
         except Exception as e:
             st.error(f"Error loading data: {e}")
             return None
     return None
 
+## Rajouter la possibilité de rajouter directement les header 
+
 def data_description(data):
-    st.write("First few rows of the data:")
-    st.dataframe(data.head())
-    st.write("Last few rows of the data:")
-    st.dataframe(data.tail())
-    st.write("Data statistical summary:")
-    st.write(data.describe())
-    # st.write("Data info:")
-    # st.write(data.info())
-    st.write("Data info:")
-    buffer = io.StringIO()
-    data.info(buf=buffer)
-    s = buffer.getvalue()
+    st.write("Data preview:")
+    col1, col2 = st.columns(2)
     
-    # Parsing the info string to create a DataFrame
-    info_list = []
-    lines = s.strip().split('\n')
-    for line in lines:
-        if line.startswith(' '):
-            continue
-        col_info = line.split(':')
-        col_name = col_info[0]
-        col_value = ':'.join(col_info[1:]).strip()
-        info_list.append([col_name, col_value])
-    
-    df = pd.DataFrame(info_list, columns=['Column', 'Info'])
-    st.dataframe(df)
+    with col1:
+        st.write("10 first rows of the data: ")
+        st.dataframe(data.head(10))
 
-def main():
-    st.title("Data Mining Project")
-    st.header("Initial Data Exploration")
-    data = load_data()
-    if data is not None:
-        data_description(data)
+        st.write("Data statistical :")
+        st.write(data.describe())
+        
+    with col2:
+        st.write("10 last rows of the data: ")
+        st.dataframe(data.tail(10))
 
-if __name__ == "__main__":
-    main()
+        st.write("Number of missing values per column:")
+        st.write(data.isnull().sum())

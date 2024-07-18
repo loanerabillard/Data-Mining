@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
 
-from clustering_prediction import clustering  # Import clustering function from clustering.py
+from clustering_prediction import clustering  
 from data_exploration import load_data
 from data_preprocessing import handle_missing_values, normalize_data
 
