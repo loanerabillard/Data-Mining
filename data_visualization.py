@@ -25,14 +25,3 @@ def visualize_data(data):
         sns.boxplot(data[column], ax=ax)
         st.pyplot(fig)
 
-def main():
-    st.title("Data Mining Project")
-    st.header("Data Visualization")
-    data = load_data()
-    if data is not None:
-        data = handle_missing_values(data)
-        data = normalize_data(data)
-        visualize_data(data)
-
-if __name__ == "__main__":
-    main()

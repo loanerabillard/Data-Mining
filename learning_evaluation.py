@@ -12,12 +12,15 @@ from data_preprocessing import handle_missing_values, normalize_data
 
 def evaluate_clustering(data, clusters):
     st.header("Cluster Evaluation")
+
+    numerical_columns = data.select_dtypes(include=['number']).columns.tolist()
+    categorical_columns = data.select_dtypes(include=['object']).columns.tolist()
     
     if clusters is None:
         st.warning("No clusters available to evaluate.")
         return
     
-    silhouette_avg = silhouette_score(data, clusters)
+    silhouette_avg = silhouette_score(data[numerical_columns], clusters)
     st.write(f"Silhouette Score: {silhouette_avg}")
     
     # Calculate cluster statistics
@@ -44,7 +47,7 @@ def evaluate_clustering(data, clusters):
     
     # Visualize clusters using PCA
     pca = PCA(2)
-    data_2d = pca.fit_transform(data)
+    data_2d = pca.fit_transform(data[numerical_columns])
     
     fig, ax = plt.subplots()
     scatter = ax.scatter(data_2d[:,0], data_2d[:,1], c=clusters, cmap='viridis')
@@ -52,15 +55,4 @@ def evaluate_clustering(data, clusters):
     ax.add_artist(legend1)
     st.pyplot(fig)
 
-def main():
-    st.title("Data Mining Project")
-    st.header("Cluster Evaluation")
-    data = load_data()
-    if data is not None:
-        data = handle_missing_values(data)
-        data = normalize_data(data)
-        clusters = clustering(data)  # Capture clusters from clustering.py
-        evaluate_clustering(data, clusters)  # Pass data and clusters for evaluation
 
-if __name__ == "__main__":
-    main()

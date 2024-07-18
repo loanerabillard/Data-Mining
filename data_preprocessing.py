@@ -68,6 +68,8 @@ def handle_missing_values(data):
             st.write("Number of missing values per column:")
             st.write(data.isnull().sum())
     
+    return data
+    
     
     
 

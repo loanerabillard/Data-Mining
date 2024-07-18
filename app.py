@@ -25,10 +25,9 @@ def main():
     options = ["Data Exploration", "Data Pre-processing", "Data Visualization", "Clustering", "Evaluation"]
     choice = st.sidebar.radio("Go to", options)
     
-    
+    data = load_data()
     if data is not None:
         if choice == "Data Exploration":
-            data = load_data()
             data_description(data)
         elif choice == "Data Pre-processing":
             data = handle_missing_values(data)
