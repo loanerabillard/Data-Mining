@@ -1,21 +1,14 @@
 import streamlit as st
 import pandas as pd
-
-
-from sklearn.impute import SimpleImputer, KNNImputer
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, LabelEncoder
-
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from sklearn.impute import SimpleImputer, KNNImputer
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, LabelEncoder
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
-
-import numpy as np
 from sklearn.cluster import KMeans
-
 from sklearn.cluster import KMeans, DBSCAN
-
 
 st.markdown(
     """
@@ -29,6 +22,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 def main():
     st.title("Data Mining Project")
@@ -216,6 +210,9 @@ def main():
         legend1 = ax.legend(*scatter.legend_elements(), title="Clusters")
         ax.add_artist(legend1)
         st.pyplot(fig)
+
+
+
 
 if __name__ == "__main__":
     main()
