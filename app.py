@@ -129,7 +129,7 @@ def main():
         
         st.header("Data Visualization")
         visualization = st.selectbox("Select visualization type:", 
-                                    ["Histogram", "Box Plot", "Correlation Matrix","PCA"])
+                                    ["Histogram", "Box Plot", "Correlation Matrix","Correlation Matrix Detail","PCA"])
         
         column = st.selectbox("Select column to visualize:", data.columns)
         
@@ -156,6 +156,16 @@ def main():
             sns.heatmap(corr, annot=True, ax=ax, cmap="coolwarm", linewidths=.5)
             st.pyplot(fig)
 
+        if visualization == "Correlation Matrix Detail":
+            corr_matrix = data[numerical_columns].corr()
+            high_corr = corr_matrix[(corr_matrix >= 0.75) | (corr_matrix <= -0.75)]
+            high_corr = high_corr.dropna(how='all', axis=0).dropna(how='all', axis=1)
+            st.header("High Correlation Matrix (|correlation| > 0.75)")
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.heatmap(high_corr, annot=True, fmt='.2f', cmap='coolwarm', linewidths=0.5, ax=ax)
+            ax.set_title('High Correlation Matrix')
+            st.pyplot(fig)
+
         if visualization == "PCA":
             st.write("PCA Visualization")
             pca = PCA(2)
@@ -164,13 +174,11 @@ def main():
 
             fig, ax = plt.subplots(figsize=(10, 8))
             
-            # Scatter plot of the first two PCA components
             scatter = ax.scatter(data_pca[:, 0], data_pca[:, 1], c='blue', edgecolor='k', s=50)
             ax.set_xlabel(f'PCA 1 ({explained_variance[0]*100:.2f}%)')
             ax.set_ylabel(f'PCA 2 ({explained_variance[1]*100:.2f}%)')
             ax.set_title('PCA Visualization with Explained Variance')
             
-            # Circle of correlation
             circle = plt.Circle((0, 0), 1, color='r', fill=False)
             ax.add_artist(circle)
             
@@ -207,6 +215,7 @@ def main():
             st.write("Clusters:")
             st.write(clusters)
         
+        pca = PCA
         pca = PCA(3)
         data_3d = pca.fit_transform(data[numerical_columns])
         
@@ -270,6 +279,9 @@ def main():
         scatter = ax.scatter(data_2d[:, 0], data_2d[:, 1], c=clusters, cmap='viridis')
         legend1 = ax.legend(*scatter.legend_elements(), title="Clusters")
         ax.add_artist(legend1)
+        ax.set_xlabel("PCA Component 1")
+        ax.set_ylabel("PCA Component 2")
+        ax.set_title("2D PCA Cluster Visualization")
         st.pyplot(fig)
 
         st.header("Prediction")
@@ -290,7 +302,6 @@ def main():
         
         features = data.drop(columns=[target_column]).columns.tolist()
         
-        # Encode categorical columns
         for col in categorical_columns:
             if col in features:
                 le = LabelEncoder()
@@ -339,6 +350,9 @@ def main():
             st.write(f"Precision: {precision_score(y_test, predictions, average='weighted')}")
             st.write(f"Recall: {recall_score(y_test, predictions, average='weighted')}")
             st.write(f"F1 Score: {f1_score(y_test, predictions, average='weighted')}")
+        
+        
+
 
 if __name__ == "__main__":
     main()
