@@ -6,7 +6,8 @@ import seaborn as sns
 import plotly.express as px
 from sklearn.impute import SimpleImputer, KNNImputer
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, LabelEncoder
-from sklearn.metrics import silhouette_score, accuracy_score, precision_score, recall_score, f1_score, mean_squared_error, r2_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, mean_squared_error, r2_score
+from sklearn.metrics import silhouette_score, davies_bouldin_score, v_measure_score
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.model_selection import train_test_split
@@ -58,7 +59,6 @@ def main():
         numerical_columns = data.select_dtypes(include=['number']).columns.tolist()
         categorical_columns = data.select_dtypes(include=['object']).columns.tolist()
         
-
         st.subheader("Handle Missing Values")
         
         col1, col2 = st.columns(2)
@@ -75,9 +75,7 @@ def main():
                 ["Delete rows/columns", "Replace with most frequent", "Replace with constant"]
             )
 
-        
-        
-        with(col1):
+        with col1:
             if method == 'Delete rows':
                 data.dropna(subset=numerical_columns)  
             elif method == 'Delete columns':
@@ -95,7 +93,7 @@ def main():
                 imputer = KNNImputer(n_neighbors=5)
                 data[numerical_columns] = imputer.fit_transform(data[numerical_columns])
 
-        with(col2):
+        with col2:
             if missing_value_method_cat == "Delete rows/columns":
                 data = data.dropna(subset=categorical_columns)
             elif missing_value_method_cat == "Replace with most frequent":
@@ -131,7 +129,7 @@ def main():
         
         st.header("Data Visualization")
         visualization = st.selectbox("Select visualization type:", 
-                                    ["Histogram", "Box Plot", "Correlation Matrix"])
+                                    ["Histogram", "Box Plot", "Correlation Matrix","PCA"])
         
         column = st.selectbox("Select column to visualize:", data.columns)
         
@@ -157,6 +155,31 @@ def main():
             fig, ax = plt.subplots(figsize=(10, 8))
             sns.heatmap(corr, annot=True, ax=ax, cmap="coolwarm", linewidths=.5)
             st.pyplot(fig)
+
+        if visualization == "PCA":
+            st.write("PCA Visualization")
+            pca = PCA(2)
+            data_pca = pca.fit_transform(data[numerical_columns])
+            explained_variance = pca.explained_variance_ratio_
+
+            fig, ax = plt.subplots(figsize=(10, 8))
+            
+            # Scatter plot of the first two PCA components
+            scatter = ax.scatter(data_pca[:, 0], data_pca[:, 1], c='blue', edgecolor='k', s=50)
+            ax.set_xlabel(f'PCA 1 ({explained_variance[0]*100:.2f}%)')
+            ax.set_ylabel(f'PCA 2 ({explained_variance[1]*100:.2f}%)')
+            ax.set_title('PCA Visualization with Explained Variance')
+            
+            # Circle of correlation
+            circle = plt.Circle((0, 0), 1, color='r', fill=False)
+            ax.add_artist(circle)
+            
+            for i, (var, (x, y)) in enumerate(zip(numerical_columns, pca.components_.T)):
+                ax.arrow(0, 0, x, y, color='r', alpha=0.5)
+                ax.text(x, y, var, ha='center', va='center', color='r')
+            
+            st.pyplot(fig)
+        
         
         st.header("Clustering")
         col1, col2 = st.columns(2)
@@ -205,9 +228,19 @@ def main():
         with col2:
             if clusters is None:
                 st.warning("No clusters available to evaluate.")
-            
-            silhouette_avg = silhouette_score(data[numerical_columns], clusters)
-            st.write(f"Silhouette Score: {silhouette_avg}")
+            else:
+                silhouette_avg = silhouette_score(data[numerical_columns], clusters)
+                davies_bouldin = davies_bouldin_score(data[numerical_columns], clusters)
+                v_measure = v_measure_score(data['Cluster'], clusters)
+                inertia = None
+                if algorithm == "K-Means":
+                    inertia = kmeans.inertia_
+
+                st.write(f"Silhouette Score: {silhouette_avg}")
+                st.write(f"Davies-Bouldin Index: {davies_bouldin}")
+                st.write(f"V-measure: {v_measure}")
+                if inertia is not None:
+                    st.write(f"Inertia: {inertia}")
         
         with col1:
             unique_clusters, counts = np.unique(clusters, return_counts=True)
