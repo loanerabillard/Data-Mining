@@ -131,7 +131,7 @@ def main():
         
         st.header("Data Visualization")
         visualization = st.selectbox("Select visualization type:", 
-                                    ["Histogram", "Box Plot"])
+                                    ["Histogram", "Box Plot", "Correlation Matrix"])
         
         column = st.selectbox("Select column to visualize:", data.columns)
         
@@ -150,6 +150,13 @@ def main():
                 fig, ax = plt.subplots()
                 sns.boxplot(data[column], ax=ax)
                 st.pyplot(fig)
+
+        if visualization == "Correlation Matrix":
+            st.write("Correlation Matrix")
+            corr = data[numerical_columns].corr()
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.heatmap(corr, annot=True, ax=ax, cmap="coolwarm", linewidths=.5)
+            st.pyplot(fig)
         
         st.header("Clustering")
         col1, col2 = st.columns(2)
