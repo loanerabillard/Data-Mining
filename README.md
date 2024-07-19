@@ -2,6 +2,10 @@
 
 Ce projet utilise Streamlit pour créer une interface utilisateur permettant d'explorer, prétraiter, visualiser, regrouper et évaluer des données à partir d'un fichier CSV chargé par l'utilisateur.
 
+## Lien Github 
+https://github.com/loanerabillard/Data-Mining
+
+
 ## Installation
 
 1. Accédez au répertoire du projet où les fichiers sont stockés.
